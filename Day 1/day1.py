@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+# day1.py
 """
 Advent of Code Day 1
 https://adventofcode.com/2018/day/1

@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+# day2.py
 """
 Advent of Code Day 2
 https://adventofcode.com/2018/day/2
