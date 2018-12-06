@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# day3.py
+# day4.py
 """
-Advent of Code Day 3
-https://adventofcode.com/2018/day/2
+Advent of Code Day 4
+https://adventofcode.com/2018/day/4
 
 Copyright David Hoffman, 2018
 """

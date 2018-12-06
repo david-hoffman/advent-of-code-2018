@@ -3,7 +3,7 @@
 # day3.py
 """
 Advent of Code Day 3
-https://adventofcode.com/2018/day/2
+https://adventofcode.com/2018/day/3
 
 Copyright David Hoffman, 2018
 """

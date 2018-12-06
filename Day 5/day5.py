@@ -3,7 +3,7 @@
 # day5.py
 """
 Advent of Code Day 5
-https://adventofcode.com/2018/day/1
+https://adventofcode.com/2018/day/5
 
 Copyright David Hoffman, 2018
 """
@@ -11,13 +11,17 @@ Copyright David Hoffman, 2018
 import string
 
 
-def react(string):
+def will_react(monomerA, monomerB):
+    return monomerA.lower() == monomerB.lower() and monomerA != monomerB
+
+
+def react(polymer):
     """React polymer, 1 time"""
-    old, new, remaining = string[0], string[1], string[2:]
+    old, new, remaining = polymer[0], polymer[1], polymer[2:]
     reacted = ""
     while len(remaining):
         # compare
-        if old.lower() == new.lower() and old != new:
+        if will_react(old, new):
             # they react!
             try:
                 old, new, remaining = remaining[0], remaining[1], remaining[2:]
@@ -33,7 +37,7 @@ def react(string):
             remaining = remaining[1:]
 
     # react final pair if necessary
-    if old.lower() == new.lower() and old != new:
+    if will_react(old, new):
         return reacted
     return reacted + old + new
 
