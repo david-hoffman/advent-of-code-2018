@@ -19,13 +19,15 @@ idx = np.indices(data.max(0) + 1)
 
 # calculate distances for all points
 distances = abs((idx[None] - data[..., None, None])).sum(1)
+
+# Mark pixels by index of closest coordinate
 mapped = distances.argmin(0)
 
 # any that are equidistant are invalid
 mapped[(distances == distances.min(0)).sum(0) > 1] = -1
 
 # calc areas
-areas = np.array([(i, (mapped == i).sum()) for i in range(len(data))])
+areas = np.array([(mapped == i).sum() for i in range(len(data))])
 
 # edges need to be ignored
 edges = np.unique(np.concatenate((mapped[[0, -1]].ravel(), mapped[:, [0, -1]].ravel())))
@@ -38,5 +40,5 @@ areas_filtered = areas[filt]
 
 
 if __name__ == '__main__':
-    print("Answer 1:", areas_filtered[areas_filtered[:, 1].argmax(), 1])
+    print("Answer 1:", areas_filtered.max())
     print("Answer 2:", (distances.sum(0) < 10000).sum())
