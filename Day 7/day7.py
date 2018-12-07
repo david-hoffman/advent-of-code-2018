@@ -32,8 +32,8 @@ def parse(line):
 
 
 if __name__ == '__main__':
-    # with open("input.txt", "r") as fp:
-    #     data = "".join(fp.readlines())
+    with open("input.txt", "r") as fp:
+        data = "".join(fp.readlines())
 
     data = data.strip("\n").split("\n")
     graph = nx.DiGraph()
@@ -51,13 +51,14 @@ if __name__ == '__main__':
     all_steps = set()
     for line in data:
         parent, child = parse(line)
+        print("{} ---> {}".format(parent, child))
         all_steps.add(parent)
         all_steps.add(child)
         try:
-            task_tree[parent].append(child)
+            task_tree[parent].add(child)
         except KeyError:
-            task_tree[parent] = [child]
-    
+            task_tree[parent] = {child}
+
     # print(task_tree, all_steps)
 
     # Clear out last steps, i.e parent's with no children
@@ -69,10 +70,7 @@ if __name__ == '__main__':
         # remove steps that have been processed
         for parent, children in task_tree.items():
             for step in steps_to_process:
-                try:
-                    children.remove(step)
-                except ValueError:
-                    pass
+                children.discard(step)
 
         steps_to_process = [parent for parent, children in task_tree.items() if not children]
         steps_reversed += sorted(steps_to_process)[::-1]
@@ -83,3 +81,4 @@ if __name__ == '__main__':
         # print("steps_reversed", steps_reversed)
 
     print("Answer 1:", "".join(steps_reversed[::-1]))
+    print("JOYAKBENSQRVXGIUWTZFMDHLPC" == "".join(steps_reversed[::-1]))
