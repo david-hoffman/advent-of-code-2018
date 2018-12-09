@@ -12,8 +12,6 @@ from collections import deque
 import numpy as np
 import networkx as nx
 
-data = "2 3 0 3 10 11 12 1 1 0 1 99 2 1 1 2"
-
 
 def parse(input_):
     """Parse input data"""
@@ -62,12 +60,32 @@ def build_graph(data):
 
     return graph
 
-if __name__ == '__main__':
-    data = parse(data)
 
+def get_value(graph):
+    """Get value for the graph (problem 2)"""
+
+    def value(node):
+        """recursive function to get value for current node"""
+        successors = list(graph.successors(node))
+        meta = graph.nodes[node]["meta"]
+        if not len(successors):
+            return np.sum(meta)
+        r = []
+        for idx in meta:
+            try:
+                # need -1 because list are zero indexed but not the problem
+                r.append(value(successors[idx - 1]))
+            except IndexError:
+                pass
+        return np.sum(r, dtype="int")
+
+    # calculate value from root.
+    return value(0)
+
+if __name__ == '__main__':
     # read real data from file
-    # with open("input.txt", "r") as fp:
-    #     data = parse(fp.read())
+    with open("input.txt", "r") as fp:
+        data = parse(fp.read())
 
     graph = build_graph(data)
 
@@ -75,5 +93,4 @@ if __name__ == '__main__':
     all_meta = np.concatenate([meta["meta"] for node, meta in graph.nodes.data()])
     print("Answer 1:", all_meta.sum())
 
-    print(graph.nodes.data())
-    print(graph[0])
+    print("Answer 2:", get_value(graph))
