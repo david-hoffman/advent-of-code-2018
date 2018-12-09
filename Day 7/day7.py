@@ -36,49 +36,28 @@ if __name__ == '__main__':
         data = "".join(fp.readlines())
 
     data = data.strip("\n").split("\n")
+
     graph = nx.DiGraph()
+    graph.add_edges_from([parse(line) for line in data])
 
-    edges = sorted([parse(line) for line in data], key=lambda x: x[0])
-    graph.add_edges_from(edges)
-
-    # clean_graph = nx.transitive_reduction(graph)
-
-    ans = "".join(nx.dfs_postorder_nodes(graph.reverse()))
+    ans = "".join(nx.lexicographical_topological_sort(graph))
     print("Answer 1:", ans)
 
-    # Build task tree
-    task_tree = dict()
-    all_steps = set()
-    for line in data:
-        parent, child = parse(line)
-        print("{} ---> {}".format(parent, child))
-        all_steps.add(parent)
-        all_steps.add(child)
-        try:
-            task_tree[parent].add(child)
-        except KeyError:
-            task_tree[parent] = {child}
+    task_times = []
+    tasks = []
+    time = 0
+    while task_times or graph:
+        available_tasks = [t for t in graph if t not in tasks and graph.in_degree(t) == 0]
+        if available_tasks and len(task_times) < 5:
+            task = min(available_tasks)  # min gets smallest task alphabetically
+            task_times.append(ord(task) - 4)
+            tasks.append(task)
+        else:
+            min_time = min(task_times)
+            completed = [tasks[i] for i, v in enumerate(task_times) if v == min_time]
+            task_times = [v - min_time for v in task_times if v > min_time]
+            tasks = [t for t in tasks if t not in completed]
+            time += min_time
+            graph.remove_nodes_from(completed)
 
-    # print(task_tree, all_steps)
-
-    # Clear out last steps, i.e parent's with no children
-    steps_reversed = steps_to_process = sorted(all_steps.symmetric_difference(task_tree))[::-1]
-
-    # iterate over
-    while task_tree:
-        print("Answer 1:", "".join(steps_reversed[::-1]))
-        # remove steps that have been processed
-        for parent, children in task_tree.items():
-            for step in steps_to_process:
-                children.discard(step)
-
-        steps_to_process = [parent for parent, children in task_tree.items() if not children]
-        steps_reversed += sorted(steps_to_process)[::-1]
-        # update task tree
-        task_tree = {parent: children for parent, children in task_tree.items() if children}
-        # print("task_tree", task_tree)
-        # print("steps_to_process", steps_to_process)
-        # print("steps_reversed", steps_reversed)
-
-    print("Answer 1:", "".join(steps_reversed[::-1]))
-    print("JOYAKBENSQRVXGIUWTZFMDHLPC" == "".join(steps_reversed[::-1]))
+    print("Answer 2:", time)
