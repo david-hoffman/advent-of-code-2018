@@ -20,38 +20,60 @@ def parse(input_):
     return deque(int(i) for i in input_.split())
 
 
-if __name__ == '__main__':
-    data = parse(data)
+class inc(object):
+    """We can use a normal int in a recursive function so make a simple class"""
 
-    with open("input.txt", "r") as fp:
-        data = parse(fp.read())
+    def __init__(self, i):
+        self.i = i
 
+    def __call__(self, i=1):
+        self.i += i
+
+
+def build_graph(data):
+    """build graph from data"""
+    # initialize graph
     graph = nx.DiGraph()
-    all_meta = []
-    all_nodes = [1]
+    # and incrementor
+    node_num = inc(0)
 
-    def build(parent, node):
+    def build(parent):
+        """The recursive function to build the graph"""
+        # pull current node number
+        node = node_num.i
+        # increase node number for next round
+        node_num()
+
         # read header
         # number of children nodes
         num_children = data.popleft()
         # amount of meta data
         num_meta = data.popleft()
 
-        print("Data left = {: >3d}, node = {: >3d}, #children = {: >2d}, meta = {: >3d}, total_nodes = {: >3d}".format(len(data), node, num_children, num_meta, len(all_nodes)))
-        for i in range(1, num_children + 1):
-            build(parent, len(all_nodes))
+        # iterate through children
+        for i in range(num_children):
+            build(node)
         # after dealing with children if there are any, add the edge and read metadata
         if node:
             graph.add_edge(parent, node)
-            all_nodes.append(1)
         graph.nodes[node]['meta'] = tuple(data.popleft() for i in range(num_meta))
-        all_meta.append(graph.nodes[node]['meta'])
 
-    build(0, 0)
+    build(node_num.i)
+
+    return graph
+
+if __name__ == '__main__':
+    data = parse(data)
+
+    # read real data from file
+    # with open("input.txt", "r") as fp:
+    #     data = parse(fp.read())
+
+    graph = build_graph(data)
+
     assert not len(data), "Not all data consumed"
-    print(graph.nodes.data())
-    print(all_meta)
-    print(len(all_nodes))
-    print(np.concatenate(all_meta).sum())
     all_meta = np.concatenate([meta["meta"] for node, meta in graph.nodes.data()])
     print("Answer 1:", all_meta.sum())
+
+    print(graph.nodes.data())
+    print(graph[0])
