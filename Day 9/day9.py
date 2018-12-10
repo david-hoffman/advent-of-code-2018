@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # day9.py
 """
-Advent of Code Day 8
+Advent of Code Day 9
 https://adventofcode.com/2018/day/9
 
 Copyright David Hoffman, 2018

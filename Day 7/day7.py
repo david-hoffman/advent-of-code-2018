@@ -6,6 +6,8 @@ Advent of Code Day 7
 https://adventofcode.com/2018/day/7
 
 Copyright David Hoffman, 2018
+
+Bits copied from reddit.com/r/adventofcode
 """
 
 import string
