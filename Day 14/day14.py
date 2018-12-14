@@ -30,18 +30,21 @@ def simulator():
 
 
 def run_simulation(n):
-    for i, scores in zip(tqdm.trange(n + 10), simulator()):
-        pass
-    return "".join(str(scores[i]) for i in range(n, n + 10))
+    for scores in simulator():
+        if len(scores) > n + 10:
+            break
+    return scores[n:n + 10]
 
 
 def run_simulation2(pattern):
-    for i, scores in enumerate(tqdm.tqdm(simulator())):
-        test = "".join(str(scores[i]) for i in range(len(scores) - len(pattern), len(scores)))
-        if test == pattern:
+    pattern = list(map(int, pattern))
+    for i, scores in enumerate(simulator()):
+        test0 = scores[-len(pattern):]
+        test1 = scores[-len(pattern) - 1:-1]
+        if test0 == pattern or test1 == pattern:
             break
-            
-    return len(scores) - len(pattern)
+
+    return len(scores) - len(pattern) - (test1 == pattern)
 
 if __name__ == '__main__':
 
@@ -52,9 +55,10 @@ if __name__ == '__main__':
         (2018, "5941429882")
     )
     for input_, result in tests:
-        assert run_simulation(input_) == result
+        ans = run_simulation(input_)
+        assert ans == list(map(int, result)), "{} != {}".format(ans, result)
 
-    print("Answer 1:", run_simulation(637061))
+    print("Answer 1:", "".join(map(str, run_simulation(637061))))
 
     tests2 = (
         ("51589", 9),
@@ -65,7 +69,6 @@ if __name__ == '__main__':
 
     for input_, result in tests2:
         ans = run_simulation2(input_)
-        print(input_, result, ans)
         assert result == ans
 
     print("Answer 2:", run_simulation2("637061"))
