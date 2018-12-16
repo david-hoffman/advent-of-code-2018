@@ -10,6 +10,7 @@ Copyright David Hoffman, 2018
 
 import numpy as np
 from collections import deque
+from itertools import count
 import string
 
 translation_table = str.maketrans("#GE", "🧱👹🧝")
@@ -40,19 +41,14 @@ class Unit(object):
         # manhattan distance is 1
         return (abs(x0 - x1) + abs(y0 - y1)) == 1
 
-    @property
-    def sortkey(self):
-        """sort key based on position"""
-        y, x = self.position
-        ny, nx = self.map.shape
-        return y * nx + x
-
-    @property
-    def alive(self):
+    def __bool__(self):
         return self.HP > 0
 
     def __repr__(self):
         return "{} @ {}, ({})".format(self.__class__.__name__, self.position, self.HP)
+
+    def __lt__(self, other):
+        return self.position < other.position
 
 
 class Elf(Unit):
@@ -78,14 +74,18 @@ def paths_to_enemy(unit, units):
         for next_pos in vertex + directions:
             next_pos = tuple(next_pos)
             next_char = new_map[next_pos[0], next_pos[1]]
-            if next_char == enemy:
-                # we've found the closest enemy!
-                yield path + [next_pos]
-            if next_char != "." or next_pos in visited:
+            if next_pos in visited:
                 # we've seen this place before or we hit something
                 continue
-            queue.append((next_pos, path + [next_pos]))
+            if next_char == enemy:
+                # we've found the closest enemy!
+                yield path[1:]
+                # do not add enemies to seen list, we want all paths to them!
+                continue
             visited.add(next_pos)
+            if next_char != ".":
+                continue
+            queue.append((next_pos, path + [next_pos]))
 
 
 def shortest_paths_to_enemy(unit, units):
@@ -99,9 +99,10 @@ def shortest_paths_to_enemy(unit, units):
 
 def place_units(units, char=True):
     """"""
-    # make a copy so as not to mess up original
-    new_map = units[0].map.copy()
-    for i, unit in zip(string.ascii_letters, sorted(units, key=lambda x: x.sortkey)):
+    for i, unit in zip(string.ascii_letters, sorted(units)):
+        if i == "a":
+            # make a copy so as not to mess up original
+            new_map = unit.map.copy()
         y, x = unit.position
         if char:
             new_map[y, x] = unit.char
@@ -116,7 +117,7 @@ def format_map(units, char=True):
     output = place_units(units, char)
     output = ["".join(line) for line in output]
     for y, line in enumerate(output):
-        output[y] = line + "   " + ", ".join(["{}({})".format(unit.char, unit.HP) for unit in units if unit.position[0] == y])
+        output[y] = line + "   " + ", ".join(["{}({})".format(unit.char, unit.HP) for unit in sorted(units) if unit.position[0] == y])
     return "\n".join(output)#.translate(translation_table).replace(".", "  ")
 
 
@@ -126,7 +127,7 @@ def parse(input_):
     units = []
     for unit_type in (Goblin, Elf):
         for pos in np.argwhere(map_ == unit_type.char):
-            units.append(unit_type(pos, map_))
+            units.append(unit_type(tuple(pos), map_))
             map_[pos[0], pos[1]] = "."
     # make map_ immutable
     map_.flags.writeable = False
@@ -140,36 +141,52 @@ def enemies_left(units):
 def run_combat(units):
     over = False
     rounds = 0
+    maps = []
     while not over:
-        for i, unit in enumerate(sorted(units, key=lambda x: x.sortkey)):
-            if not unit.alive:
-                continue
+        units.sort()
+        for i, unit in enumerate(units):
             if not enemies_left(units):
+                # any enemies left?
                 over = True
                 break
+            if not unit:
+                # if the unit was killed during a round ignore it for now
+                continue
             # move unit
-            try:
-                best_path = next(shortest_paths_to_enemy(unit, units))
-            except StopIteration:
-                best_path = []
-            if len(best_path) > 2:
-                # we're not next to an enemy
-                # take one step along path, note that first location is original position
-                unit.position = best_path[1]
+            # find all shortest paths, make sure to clear dead units from search!
+            best_paths = list(shortest_paths_to_enemy(unit, filter(None, units)))
+            # we're already sorted by first step and length so only need to sort by target position reading order
+            if len(best_paths) and min(len(path) for path in best_paths):
+                # found at least one possible step
+                # test = best_paths[:]
+                best_paths.sort(key=lambda x: x[-1])
+                # assert test == best_paths
+                best_path = best_paths[0]
+                # move to new spot, make sure it's a neighbor
+                assert np.abs(np.subtract(unit.position, best_path[0])).sum() == 1, "{} ---> {}".format(unit.position, best_path[0])
+                unit.position = best_path[0]
+                
             # find targets
-            possible_targets = [test_unit for test_unit in units if unit.is_neighbor(test_unit) and unit.char != test_unit.char and test_unit.alive]
+            possible_targets = sorted([test_unit for test_unit in units if unit.is_neighbor(test_unit) and unit.char != test_unit.char and test_unit])
             if possible_targets:
                 # select target
-                target = sorted(possible_targets, key=lambda x: (x.HP, x.sortkey))[0]
+                target = sorted(possible_targets, key=lambda x: (x.HP, x.position[0], x.position[1]))[0]
                 # attack
-                assert target.HP > 0
+                assert target
+                assert unit
+                assert not (target is unit)
                 target.HP -= unit.AP
+        
         if i == len(units) - 1:
+            # round completed without break?
             rounds += 1
+            units = list(filter(None, units))
+            maps.append(format_map(units))
+            if not enemies_left(units) and not target:
+                rounds -= 1
+                over = True
 
-        units = [unit for unit in units if unit.alive]
-
-    return units, rounds - 1
+    return units, np.sum([unit.HP for unit in units]), rounds, maps
 
 
 def clean_test_input(test_input):
@@ -259,11 +276,11 @@ if __name__ == '__main__':
 
         units = parse(input_)
 
-        units, rounds = run_combat(units)
-        total_HP = np.sum([unit.HP for unit in units]) 
-        result = total_HP * rounds
+        units, total_HP, rounds, maps = run_combat(units)
+        result = total_HP * (rounds - 0)
+        print(test_result)
         try:
-            assert result == test_result, "Result {}, total HP {}, rounds {}\n".format(result, total_HP, rounds) + format_map(units)
+            assert result == test_result, "Result {}, total HP {}, rounds {}\n".format(result, total_HP, rounds) + maps[-1] #+ "\n\n".join(["Round {}\n{}".format(i+1, map_) for i, map_ in enumerate(maps)])
         except AssertionError as e:
             print(e)
 
@@ -271,8 +288,22 @@ if __name__ == '__main__':
         input_ = fp.read()
 
     units = parse(input_)
-    print(format_map(units, False))
-    units, rounds = run_combat(units)
+    print(format_map(units))
+    units, total_HP, rounds, maps = run_combat(units)
     print("+" * 80)
-    print(format_map(units, False))
-    print(np.sum([unit.HP for unit in units]), rounds)
+    print(format_map(units))
+    print(total_HP, rounds)
+    # print("\n\n".join(["Round {}\n{}".format(i+1, map_) for i, map_ in enumerate(maps)]))
+
+    for AP in count(4):
+        Elf.AP = AP
+        units = parse(input_)
+        starting_elves = len([unit for unit in units if unit.char == "E"])
+        print("starting_elves", starting_elves)
+        units, total_HP, rounds, maps = run_combat(units)
+
+        remaining_elves = len([unit for unit in units if unit.char == "E"])
+        print("remaing_elves", remaining_elves)
+        if remaining_elves == starting_elves:
+            break
+    print(total_HP, rounds)
