@@ -8,10 +8,11 @@ https://adventofcode.com/2018/day/15
 Copyright David Hoffman, 2018
 """
 
+import time
+import string
 import numpy as np
 from collections import deque
 from itertools import count
-import string
 
 translation_table = str.maketrans("#GE", "🧱👹🧝")
 
@@ -118,7 +119,7 @@ def format_map(units, char=True):
     output = ["".join(line) for line in output]
     for y, line in enumerate(output):
         output[y] = line + "   " + ", ".join(["{}({})".format(unit.char, unit.HP) for unit in sorted(units) if unit.position[0] == y])
-    return "\n".join(output)#.translate(translation_table).replace(".", "  ")
+    return "\n".join(output)
 
 
 def parse(input_):
@@ -142,12 +143,11 @@ def run_combat(units):
     over = False
     rounds = 0
     maps = []
-    while not over:
+    while enemies_left(units):
         units.sort()
         for i, unit in enumerate(units):
-            if not enemies_left(units):
+            if not enemies_left(filter(None, units)):
                 # any enemies left?
-                over = True
                 break
             if not unit:
                 # if the unit was killed during a round ignore it for now
@@ -176,17 +176,15 @@ def run_combat(units):
                 assert unit
                 assert not (target is unit)
                 target.HP -= unit.AP
-        
-        if i == len(units) - 1:
+
+        else:
             # round completed without break?
             rounds += 1
-            units = list(filter(None, units))
-            maps.append(format_map(units))
-            if not enemies_left(units) and not target:
-                rounds -= 1
-                over = True
+            maps.append(format_map(filter(None, units)))
 
-    return units, np.sum([unit.HP for unit in units]), rounds, maps
+        units = list(filter(None, units))
+    maps.append(format_map(filter(None, units)))
+    return units, np.sum([unit.HP for unit in filter(None, units)]), rounds, maps
 
 
 def clean_test_input(test_input):
@@ -278,9 +276,8 @@ if __name__ == '__main__':
 
         units, total_HP, rounds, maps = run_combat(units)
         result = total_HP * (rounds - 0)
-        print(test_result)
         try:
-            assert result == test_result, "Result {}, total HP {}, rounds {}\n".format(result, total_HP, rounds) + maps[-1] #+ "\n\n".join(["Round {}\n{}".format(i+1, map_) for i, map_ in enumerate(maps)])
+            assert result == test_result, "Result {} != {}, total HP {}, rounds {}\n".format(result, test_result, total_HP, rounds) + maps[-1] #+ "\n\n".join(["Round {}\n{}".format(i+1, map_) for i, map_ in enumerate(maps)])
         except AssertionError as e:
             print(e)
 
@@ -288,22 +285,23 @@ if __name__ == '__main__':
         input_ = fp.read()
 
     units = parse(input_)
-    print(format_map(units))
-    units, total_HP, rounds, maps = run_combat(units)
-    print("+" * 80)
-    print(format_map(units))
-    print(total_HP, rounds)
-    # print("\n\n".join(["Round {}\n{}".format(i+1, map_) for i, map_ in enumerate(maps)]))
+    units, total_HP, rounds, battle0 = run_combat(units)
+    print("Answer 1:", total_HP * rounds)
 
     for AP in count(4):
         Elf.AP = AP
         units = parse(input_)
         starting_elves = len([unit for unit in units if unit.char == "E"])
-        print("starting_elves", starting_elves)
-        units, total_HP, rounds, maps = run_combat(units)
+        units, total_HP, rounds, battle1 = run_combat(units)
 
         remaining_elves = len([unit for unit in units if unit.char == "E"])
-        print("remaing_elves", remaining_elves)
         if remaining_elves == starting_elves:
             break
-    print(total_HP, rounds)
+    print("Answer 2:", total_HP * rounds)
+
+    for battle in (battle0, battle1):
+        for i, map_ in enumerate(battle):
+            time.sleep(1 / 24)
+            print("{:-^32s}".format("Round {}".format(i)))
+            print(map_.translate(translation_table).replace(".", "  "))
+        time.sleep(3)
