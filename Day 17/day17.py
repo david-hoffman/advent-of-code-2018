@@ -9,7 +9,7 @@ Copyright David Hoffman, 2018
 """
 
 import numpy as np
-import tqdm
+import matplotlib.pyplot as plt
 
 
 # water can't go up so no up direction
@@ -21,7 +21,7 @@ DIRECTIONS = LEFT, RIGHT, DOWN
 
 
 def place_water(map_, water, char):
-    """"""
+    """Put water on the map"""
     new_map = map_.copy()
     if water:
         y, x = np.array(tuple(water)).T
@@ -105,20 +105,20 @@ def fill_water(start, map_,):
             vertex = new_vertex(vertex, direction)
         return to_fill, clay(vertex)
 
-    def update(ylevel):
+    def update(vertex):
         """Update which water is standing and which is flowing"""
         # first update standing
-        for vertex in filter(lambda x: x[0] == ylevel, visited):
-            if vertex in standing:
-                continue
-            left_set, left_end = search1d(vertex, LEFT)
-            right_set, right_end = search1d(vertex, RIGHT)
-            if left_end and right_end:
-                standing.update(left_set, right_set)
+        left_set, left_end = search1d(vertex, LEFT)
+        right_set, right_end = search1d(vertex, RIGHT)
+        if left_end and right_end:
+            standing.update(left_set, right_set)
 
     def flowable(vertex):
         """Check lower right and lower left for clay"""
-        return any(clay(new_vertex(vertex, direction)) for direction in (LEFT, RIGHT)) and vertex not in visited
+        clay_test = any(clay(new_vertex(vertex, direction)) for direction in (LEFT, RIGHT))
+        # all three tiles below should not have been visited
+        visited_test = all(new_vertex(vertex, direction) not in visited for direction in ((0, 0), LEFT, RIGHT))
+        return clay_test and visited_test
 
     while stack:
         vertex, old_dir = stack.pop()
@@ -129,8 +129,9 @@ def fill_water(start, map_,):
             # if we've hit clay or moved off map
             continue
         if old_dir is not DOWN:
-            update(vertex[0] + 1)
+            # update lower level
             down = new_vertex(vertex, DOWN)
+            update(down)
             if not clay(down) and down not in standing and not flowable(down):
                 # we've moved sideways and we're over thin air, but not flowable
                 continue
@@ -139,6 +140,9 @@ def fill_water(start, map_,):
         for direction in DIRECTIONS:
             stack.append((new_vertex(vertex, direction), direction))
         yield visited, standing, vertex
+    # update all vertices:
+    for vertex in visited:
+        update(vertex)
 
 
 test_input = """x=495, y=2..7
@@ -150,7 +154,6 @@ x=498, y=10..13
 x=504, y=10..13
 y=13, x=498..504"""
 
-
 if __name__ == '__main__':
     map_, maxes, mins = parse(test_input.splitlines())
     print("\n".join("".join(line) for line in map_[:, 494:]))
@@ -160,28 +163,31 @@ if __name__ == '__main__':
         new_map = place_water(new_map, standing, "~")
         new_map = place_water(new_map, current, "*")
         print("\n".join("".join(line) for line in new_map[:, 494:]))
-        # if i > 57:
-        #     break
-    
+
     print("+" * 80)
     new_map = place_water(map_, water, "|")
     new_map = place_water(new_map, standing, "~")
     print("\n".join("".join(line) for line in new_map[:, 494:]))
 
-    print(len(list(filter(lambda x: x[0] >= mins[0], water))))
+    assert len(list(filter(lambda x: x[0] >= mins[0], water))) == 57
 
     with open("input.txt", "r") as fp:
         map_, maxes, mins = parse(fp.readlines())
 
-    print(map_.shape)
-
     for i, (water, standing, current) in enumerate((fill_water((0, 500), map_))):
-        if not i % 250:
-            print(len(water), len(standing))
-            new_map = place_water(map_, water, "|")
-            new_map = place_water(new_map, standing, "~")
-            new_map = place_water(new_map, current, "*")
-            y, x = current
-            print("\n".join("".join(line) for line in new_map[y - 20: y + 20, x - 20:x + 20]))
+        pass
 
-    print(len(list(filter(lambda x: x[0] >= mins[0], water))))
+    new_map = place_water(map_, water, "|")
+    new_map = place_water(new_map, standing, "~")
+    new_map = place_water(new_map, current, "*")
+
+    print("Answer 1:", len(list(filter(lambda x: x[0] >= mins[0], water))))
+    print("Answer 2:", len(list(filter(lambda x: x[0] >= mins[0], standing))))
+
+    new_new_map = np.zeros(new_map.shape, int)
+
+    new_new_map[new_map == "#"] = 1
+    new_new_map[new_map == "|"] = 2
+    new_new_map[new_map == "~"] = 3
+    plt.matshow(new_new_map[:, mins[1]:])
+    plt.show()
