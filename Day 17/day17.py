@@ -177,17 +177,17 @@ if __name__ == '__main__':
     for i, (water, standing, current) in enumerate((fill_water((0, 500), map_))):
         pass
 
-    new_map = place_water(map_, water, "|")
-    new_map = place_water(new_map, standing, "~")
-    new_map = place_water(new_map, current, "*")
-
     print("Answer 1:", len(list(filter(lambda x: x[0] >= mins[0], water))))
     print("Answer 2:", len(list(filter(lambda x: x[0] >= mins[0], standing))))
 
-    new_new_map = np.zeros(new_map.shape, int)
+    # new_map = place_water(map_, water, "|")
+    # new_map = place_water(new_map, standing, "~")
+    # new_map = place_water(new_map, current, "*")
 
-    new_new_map[new_map == "#"] = 1
-    new_new_map[new_map == "|"] = 2
-    new_new_map[new_map == "~"] = 3
-    plt.matshow(new_new_map[:, mins[1]:])
-    plt.show()
+    # new_new_map = np.zeros(new_map.shape, int)
+
+    # new_new_map[new_map == "#"] = 1
+    # new_new_map[new_map == "|"] = 2
+    # new_new_map[new_map == "~"] = 3
+    # plt.matshow(new_new_map[:, mins[1]:])
+    # plt.show()
