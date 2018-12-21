@@ -9,13 +9,9 @@ Copyright David Hoffman, 2018
 """
 
 import re
-import numpy as np
+from itertools import count
 import tqdm
 re_digits = re.compile(r"\d+")
-
-# int = np.uint64
-
-np.seterr(over="raise")
 
 def strip_digits(input_):
     """Strip numbers from a string"""
@@ -173,25 +169,21 @@ def parse(input_):
     return ip, instructions
 
 if __name__ == '__main__':
-    ip, instructions = parse(test_input)
+    ip_loc, instructions = parse(test_input)
 
     with open("input.txt", "r") as fp:
-        ip, instructions = parse(fp.read())
-
-    print(ip, instructions)
-    print(len(instructions))
+        ip_loc, instructions = parse(fp.read())
     
     init_register = new_register = [int(0)] * 6
-    # while ip < len(instructions):
-    for i in tqdm.trange(10_000_000):
-        instruction = instructions[ip]
+    # init_register[0] = 1
+    ip = new_register[ip_loc]
+    for i in tqdm.tqdm(count()):
+        instruction, A, B, C = instructions[ip]
         old_register = new_register[:]
-        # new_register[1] = 0
-        # print(new_register)
-        new_register = ALL_OPS[instruction[0]](new_register, *instruction[1:])
-        # print("ip={} {} {} {}".format(ip, old_register, instruction, new_register))
-        new_register[0] = new_register[0] + 1
-        ip = new_register[0]
+        new_register[ip_loc] = ip
+        new_register = ALL_OPS[instruction](new_register, A, B, C)
+        ip = new_register[ip_loc] + 1
+        if not ip < len(instructions):
+            break
 
-
-    print("ip={} {} {} {}".format(ip, old_register, instruction, new_register))
+    print("Answer 1:", new_register[0], old_register[0])
