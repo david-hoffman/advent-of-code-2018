@@ -174,17 +174,25 @@ if __name__ == '__main__':
 
     with open("input.txt", "r") as fp:
         ip_loc, instructions = parse(fp.read())
-    
-    init_register = new_register = [int(0)] * 6
-    init_register[0] = 1
-    ip = new_register[ip_loc]
-    while ip < len(instructions):
-        instruction, A, B, C = instructions[ip]
-        old_register = new_register[:]
-        new_register[ip_loc] = ip
-        new_register = ALL_OPS[instruction](new_register, A, B, C)
-        ip = new_register[ip_loc] + 1
 
-    print("Answer 1:", new_register[0], old_register[0])
-    with open("Ans.txt", "w") as fp:
-        fp.write("Answer 1: {}".format(new_register[0]))
+    print(ip_loc, len(instructions))
+    wins = []
+    for j in range(10000):
+        init_register = new_register = [int(0)] * 6
+        init_register[0] = j
+        ip = new_register[ip_loc]
+        for i in count():
+            instruction, A, B, C = instructions[ip]
+            old_register = new_register[:]
+            new_register[ip_loc] = ip
+            new_register = ALL_OPS[instruction](new_register, A, B, C)
+            ip = new_register[ip_loc] + 1
+            if not ip < len(instructions):
+                break
+            if i > 1000:
+                # print(j, "failed")
+                break
+        if not i > 1000:
+            wins.append((j, i))
+    print(wins)
+    print(i, ip, new_register)
