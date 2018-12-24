@@ -38,10 +38,13 @@ def inrange(a_pos, pos, radii):
     return (ranges(a_pos, pos) <= radii).sum()
 
 
-def find_best_points(p, r, num_steps=10, search_radius=1):
-    """For part II we only need to search along the 3 cardinal directions (because of manhattan distance)
-    for each point. We can find the best such point with a simple maximization search algorithm
-    so then we have 3 such points for each bot and we can find the best one
+def find_best_points(p, r, num_steps=25, search_radius=1):
+    """For part II its all about restricting the search space
+
+    We only need to search along the 3 cardinal directions from each bot and only up to each bot's signal
+    radius (because of manhattan distance). We can find the best such point along each direction with a
+    naive maximization search algorithm assuming that the function is not too rough. Then we have three such
+    points for each bot which we can easily find the maximum count and minimum distance.
     """
     directions = np.array((
         (1, 0, 0),
