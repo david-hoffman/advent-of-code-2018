@@ -9,6 +9,7 @@ Copyright David Hoffman, 2018
 """
 
 import numpy as np
+import tqdm
 import matplotlib.pyplot as plt
 from itertools import product
 import re
@@ -37,10 +38,35 @@ def inrange(a_pos, pos, radii):
     return (ranges(a_pos, pos) <= radii).sum()
 
 
-def get_octants(min_radius, max_radius):
-    for octant in product((1, 3), (1, 3), (1, 3)):
-        yield (max_radius - min_radius) * octant // 4 + min_radius
-
+def find_best_points(p, r, num_steps=10, search_radius=1):
+    """For part II we only need to search along the 3 cardinal directions (because of manhattan distance)
+    for each point. We can find the best such point with a simple maximization search algorithm
+    so then we have 3 such points for each bot and we can find the best one
+    """
+    directions = np.array((
+        (1, 0, 0),
+        (0, 1, 0),
+        (0, 0, 1)
+    ))
+    
+    for direction in directions:
+        start = -r
+        stop = r
+        # plt.figure()
+        while True:
+            step = max((stop - start) // num_steps, 1)
+            test_points = np.arange(start, stop + step, step)
+            counts = np.array([inrange(p + direction * i, pos, radii) for i in test_points])
+            idx_max = counts.argmax()
+            # print(counts.shape, idx_max, test_points[idx_max], p + direction * test_points[idx_max], counts[idx_max], step)
+            # plt.plot(test_points, counts)
+            start = test_points[max(idx_max - search_radius, 0)]
+            stop = test_points[min(idx_max + search_radius, len(test_points) - 1)]
+            if step == 1:
+                break
+        # plt.plot(test_points[idx_max], counts[idx_max], "ro")
+        # plt.show()
+        yield abs(p + direction * test_points[idx_max]).sum(), counts[idx_max]
 
 test_input0 = """pos=<0,0,0>, r=4
 pos=<1,0,0>, r=1
@@ -68,43 +94,11 @@ if __name__ == '__main__':
 
     print("Answer 1:", inrange(pos[radii.argmax()], pos, radii.max()))
 
-    print(inrange(pos[radii.argmax()], pos, radii))
+    all_points = []
+    for p, r in zip(tqdm.tqdm(pos), radii):
+        all_points.extend(list(find_best_points(p, r + 1)))
 
-    # do a binary search in 3D, there's 8 octants for each iteration
-    max_radius = pos.max(0)
-    min_radius = pos.min(0)
-    # print([octant for octant in get_octants(min_radius, max_radius)])
-    # print((max_radius - min_radius) / max_radius.max())
-
-    n_range = np.array([inrange(p, pos, radii) for p in pos])
-    search_points = list(zip(map(tuple, pos), n_range))
-
-    def find_next_in_range(p, pos, radii):
-        """Find the point that moving the shortest distance will bring it in range"""
-        n_inrange = inrange(p, pos, radii)
-        vectors = (pos - p)
-        mags = abs(vectors).sum(1)
-        to_move = mags - radii
-        next_idx = to_move.argsort()[n_inrange]
-        return pos[next_idx], radii[next_idx]
-
-    # best_points = [(p, inrange(p, pos, radii)) for p in search_points]
-    # best_num = max(num for p, num in best_points)
-    points_seen = set(search_points)
-    while search_points:
-        p, old_n = search_points.pop()
-        p_next, r_next = find_next_in_range(p, pos, radii)
-        v_move = (p_next - p)
-        v_mag = abs(v_move).sum() 
-        v_move = (v_move * (v_mag - r_next) / v_mag).round().astype(int)
-        p_new = tuple(p + v_move)
-        num_new = inrange(p_new, pos, radii)
-        if num_new >= old_n and (p_new, num_new) not in points_seen:
-            best_num = num_new
-            search_points.append((p_new, num_new))
-        points_seen.add((p_new, num_new))
-        print(len(search_points), p, old_n)
-
-    arr = np.array([(np.abs(pos).sum(), num) for pos, num in points_seen])
-
-    print(arr[arr[:, 1].argmax()])
+    # print(all_points)
+    # sort by descending counts first and ascending distance second
+    all_points2 = sorted(all_points, key=lambda x: (-x[1], x[0]))
+    print("Answer 2:", all_points2[0])
