@@ -10,8 +10,6 @@ Copyright David Hoffman, 2018
 
 import numpy as np
 import tqdm
-import matplotlib.pyplot as plt
-from itertools import product
 import re
 re_digits = re.compile(r"-?\d+")
 
