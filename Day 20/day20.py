@@ -38,9 +38,7 @@ def build_graph(input_):
             # branch
             growing_ends = branch_stack[-1]
         else:
-            new_edges = [
-                (end, sum_tuple(end, DIRECTIONS[char])) for end in growing_ends
-            ]
+            new_edges = [(end, sum_tuple(end, DIRECTIONS[char])) for end in growing_ends]
             graph.add_edges_from(new_edges)
             # update growing ends
             growing_ends = {new for old, new in new_edges}

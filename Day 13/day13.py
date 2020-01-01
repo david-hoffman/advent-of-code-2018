@@ -20,12 +20,7 @@ Heading = dict(UP=(-1, 0), DOWN=(1, 0), LEFT=(0, -1), RIGHT=(0, 1))
 HeadingReversed = {v: k for k, v in Heading.items()}
 
 # mapping for initial cart positions
-InitCartPositions = {
-    ">": ("RIGHT", "-"),
-    "<": ("LEFT", "-"),
-    "^": ("UP", "|"),
-    "v": ("DOWN", "|"),
-}
+InitCartPositions = {">": ("RIGHT", "-"), "<": ("LEFT", "-"), "^": ("UP", "|"), "v": ("DOWN", "|")}
 
 # reverse mapping for making ASCII output
 InitCartPositionsReversed = {

@@ -54,9 +54,7 @@ def find_best_points(p, r, num_steps=25, search_radius=1):
         while True:
             step = max((stop - start) // num_steps, 1)
             test_points = np.arange(start, stop + step, step)
-            counts = np.array(
-                [inrange(p + direction * i, pos, radii) for i in test_points]
-            )
+            counts = np.array([inrange(p + direction * i, pos, radii) for i in test_points])
             idx_max = counts.argmax()
             # print(counts.shape, idx_max, test_points[idx_max], p + direction * test_points[idx_max], counts[idx_max], step)
             # plt.plot(test_points, counts)

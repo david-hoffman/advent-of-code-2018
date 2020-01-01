@@ -125,9 +125,7 @@ if __name__ == "__main__":
                 continue
             if erosion(newpos) % 3 == eq:  # can we go here with this equipment?
                 continue
-            if (newpos, eq) in visited and visited[
-                (newpos, eq)
-            ] <= time:  # there is a faster way
+            if (newpos, eq) in visited and visited[(newpos, eq)] <= time:  # there is a faster way
                 continue
             visited[(newpos, eq)] = time
             heappush(heap, (time, newpos.real, newpos.imag, eq))

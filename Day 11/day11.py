@@ -42,9 +42,7 @@ def best_loc(serial_num, power=None, size=3):
     # convert mean to sum
     max_power = (max_power * size ** 2).round().astype(int)
     # find central pixel and convert to upper left
-    Y_max, X_max = (
-        np.array(np.unravel_index(max_power.argmax(), max_power.shape)) + 1 - size // 2
-    )
+    Y_max, X_max = np.array(np.unravel_index(max_power.argmax(), max_power.shape)) + 1 - size // 2
     return X_max, Y_max, max_power.max(), (max_power == max_power.max()).sum()
 
 
@@ -76,9 +74,7 @@ if __name__ == "__main__":
     print("Answer 1:", end=" ")
     for serial_num in (18, 42, 3628)[-1:]:
         X_max, Y_max, max_power, num_max = best_loc(serial_num)
-        print(
-            "num max {}, max {}, <X,y> = {},{}".format(num_max, max_power, X_max, Y_max)
-        )
+        print("num max {}, max {}, <X,y> = {},{}".format(num_max, max_power, X_max, Y_max))
 
     print("Answer 2:", end=" ")
     for serial_num in (18, 42, 3628)[-1:]:

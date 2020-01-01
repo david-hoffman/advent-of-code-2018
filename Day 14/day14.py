@@ -49,12 +49,7 @@ def run_simulation2(pattern):
 
 if __name__ == "__main__":
 
-    tests = (
-        (9, "5158916779"),
-        (5, "0124515891"),
-        (18, "9251071085"),
-        (2018, "5941429882"),
-    )
+    tests = ((9, "5158916779"), (5, "0124515891"), (18, "9251071085"), (2018, "5941429882"))
     for input_, result in tests:
         ans = run_simulation(input_)
         assert ans == list(map(int, result)), "{} != {}".format(ans, result)

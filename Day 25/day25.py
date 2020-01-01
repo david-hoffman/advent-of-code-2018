@@ -19,9 +19,7 @@ def manhattan(pos0, pos1):
 
 
 def parse(input_):
-    return [
-        tuple(map(int, line.split()[-1].split(","))) for line in input_.splitlines()
-    ]
+    return [tuple(map(int, line.split()[-1].split(","))) for line in input_.splitlines()]
 
 
 def find_constellations(points, diagnostics=False, distance=3):

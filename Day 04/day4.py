@@ -36,9 +36,7 @@ def convert_minutes(minutes):
 
 
 if __name__ == "__main__":
-    df = pd.DataFrame([d for d in data()], columns=("date", "string")).sort_values(
-        "date"
-    )
+    df = pd.DataFrame([d for d in data()], columns=("date", "string")).sort_values("date")
     list_of_guards = []
     minutes = None
     for i, date, string in df.itertuples():
@@ -71,9 +69,7 @@ if __name__ == "__main__":
     minute_of_most_sleep = df2.groupby("guard_num").awake.agg(
         lambda x: (~np.stack(x)).sum(0).argmax()
     )
-    minutes_of_sleep = df2.groupby("guard_num").awake.agg(
-        lambda x: (~np.stack(x)).sum(0).max()
-    )
+    minutes_of_sleep = df2.groupby("guard_num").awake.agg(lambda x: (~np.stack(x)).sum(0).max())
 
     guard_num = minutes_of_sleep.idxmax()
     minute = minute_of_most_sleep[guard_num]

@@ -115,13 +115,10 @@ def fill_water(start, map_):
 
     def flowable(vertex):
         """Check lower right and lower left for clay"""
-        clay_test = any(
-            clay(new_vertex(vertex, direction)) for direction in (LEFT, RIGHT)
-        )
+        clay_test = any(clay(new_vertex(vertex, direction)) for direction in (LEFT, RIGHT))
         # all three tiles below should not have been visited
         visited_test = all(
-            new_vertex(vertex, direction) not in visited
-            for direction in ((0, 0), LEFT, RIGHT)
+            new_vertex(vertex, direction) not in visited for direction in ((0, 0), LEFT, RIGHT)
         )
         return clay_test and visited_test
 

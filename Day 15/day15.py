@@ -181,9 +181,7 @@ def run_combat(units):
                 [
                     test_unit
                     for test_unit in units
-                    if unit.is_neighbor(test_unit)
-                    and unit.char != test_unit.char
-                    and test_unit
+                    if unit.is_neighbor(test_unit) and unit.char != test_unit.char and test_unit
                 ]
             )
             if possible_targets:

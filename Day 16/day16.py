@@ -166,11 +166,7 @@ def test_op(op, input_register, instruction, output_register):
 
 
 def possible_ops(input_register, instruction, output_register):
-    return {
-        op
-        for op in ALL_OPS
-        if test_op(op, input_register, instruction, output_register)
-    }
+    return {op for op in ALL_OPS if test_op(op, input_register, instruction, output_register)}
 
 
 if __name__ == "__main__":
@@ -185,9 +181,7 @@ if __name__ == "__main__":
             before, instruction, after = bunch.splitlines()
         except ValueError:
             continue
-        samples.append(
-            (strip_digits(before), strip_digits(instruction), strip_digits(after))
-        )
+        samples.append((strip_digits(before), strip_digits(instruction), strip_digits(after)))
 
     # we know that the last bunch is the program
     program = list(map(strip_digits, bunch.splitlines()))
