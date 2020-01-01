@@ -35,8 +35,10 @@ def convert_minutes(minutes):
     return awake
 
 
-if __name__ == '__main__':
-    df = pd.DataFrame([d for d in data()], columns=("date", "string")).sort_values("date")
+if __name__ == "__main__":
+    df = pd.DataFrame([d for d in data()], columns=("date", "string")).sort_values(
+        "date"
+    )
     list_of_guards = []
     minutes = None
     for i, date, string in df.itertuples():
@@ -50,7 +52,13 @@ if __name__ == '__main__':
             minutes.append(date.minute)
 
     # minutes asleep are the opposite of minutes awake
-    df2 = pd.DataFrame([(l[0], l[1], convert_minutes(l[1]), (~convert_minutes(l[1])).sum()) for l in list_of_guards], columns=("guard_num", "points", "awake", "sleep_time"))
+    df2 = pd.DataFrame(
+        [
+            (l[0], l[1], convert_minutes(l[1]), (~convert_minutes(l[1])).sum())
+            for l in list_of_guards
+        ],
+        columns=("guard_num", "points", "awake", "sleep_time"),
+    )
 
     total_sleep = df2.groupby("guard_num").sleep_time.sum()
     sleepiest_guard_num = total_sleep.idxmax()
@@ -60,8 +68,12 @@ if __name__ == '__main__':
 
     print("Answer 1:", sleepiest_minute * sleepiest_guard_num)
 
-    minute_of_most_sleep = df2.groupby("guard_num").awake.agg(lambda x: (~np.stack(x)).sum(0).argmax())
-    minutes_of_sleep = df2.groupby("guard_num").awake.agg(lambda x: (~np.stack(x)).sum(0).max())
+    minute_of_most_sleep = df2.groupby("guard_num").awake.agg(
+        lambda x: (~np.stack(x)).sum(0).argmax()
+    )
+    minutes_of_sleep = df2.groupby("guard_num").awake.agg(
+        lambda x: (~np.stack(x)).sum(0).max()
+    )
 
     guard_num = minutes_of_sleep.idxmax()
     minute = minute_of_most_sleep[guard_num]

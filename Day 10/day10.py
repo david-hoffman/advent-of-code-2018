@@ -50,7 +50,8 @@ def bounding_box(arr):
     """return area of bounding box of point cloud"""
     return np.prod(arr.max(0) - arr.min(0))
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     data = test_data
 
     with open("input.txt", "r") as fp:

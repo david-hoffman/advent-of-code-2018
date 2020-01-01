@@ -33,7 +33,7 @@ def parse(line):
     return line[5], line[36]
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     with open("input.txt", "r") as fp:
         data = "".join(fp.readlines())
 
@@ -49,7 +49,9 @@ if __name__ == '__main__':
     tasks = []
     time = 0
     while task_times or graph:
-        available_tasks = [t for t in graph if t not in tasks and graph.in_degree(t) == 0]
+        available_tasks = [
+            t for t in graph if t not in tasks and graph.in_degree(t) == 0
+        ]
         if available_tasks and len(task_times) < 5:
             task = min(available_tasks)  # min gets smallest task alphabetically
             task_times.append(ord(task) - 4)

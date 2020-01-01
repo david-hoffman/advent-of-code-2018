@@ -11,11 +11,14 @@ Copyright David Hoffman, 2018
 import re
 from itertools import count
 import tqdm
+
 re_digits = re.compile(r"\d+")
+
 
 def strip_digits(input_):
     """Strip numbers from a string"""
     return list(map(int, re_digits.findall(input_)))
+
 
 # Addition:
 
@@ -31,6 +34,7 @@ def addi(register, A, B, C):
     register[C] = register[A] + B
     return register
 
+
 # Multiplication:
 
 
@@ -44,6 +48,7 @@ def muli(register, A, B, C):
     """(multiply immediate) stores into register C the result of multiplying register A and value B."""
     register[C] = register[A] * B
     return register
+
 
 # Bitwise AND:
 
@@ -59,6 +64,7 @@ def bani(register, A, B, C):
     register[C] = register[A] & B
     return register
 
+
 # Bitwise OR:
 
 
@@ -73,6 +79,7 @@ def bori(register, A, B, C):
     register[C] = register[A] | B
     return register
 
+
 # Assignment:
 
 
@@ -86,6 +93,7 @@ def seti(register, A, B, C):
     """(set immediate) stores value A into register C. (Input B is ignored.)"""
     register[C] = A
     return register
+
 
 # Greater-than testing:
 
@@ -107,6 +115,7 @@ def gtrr(register, A, B, C):
     register[C] = int(register[A] > register[B])
     return register
 
+
 # Equality testing:
 
 
@@ -127,6 +136,7 @@ def eqrr(register, A, B, C):
     register[C] = int(register[A] == register[B])
     return register
 
+
 ALL_OPS = dict(
     addr=addr,
     addi=addi,
@@ -143,7 +153,7 @@ ALL_OPS = dict(
     gtrr=gtrr,
     eqir=eqir,
     eqri=eqri,
-    eqrr=eqrr
+    eqrr=eqrr,
 )
 
 assert len(ALL_OPS) == 16
@@ -169,12 +179,12 @@ def parse(input_):
     return ip, instructions
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     ip_loc, instructions = parse(test_input)
 
     with open("input.txt", "r") as fp:
         ip_loc, instructions = parse(fp.read())
-    
+
     init_register = new_register = [int(0)] * 6
     init_register[0] = 1
     ip = new_register[ip_loc]

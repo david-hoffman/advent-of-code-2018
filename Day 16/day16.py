@@ -9,12 +9,14 @@ Copyright David Hoffman, 2018
 """
 
 import re
+
 re_digits = re.compile(r"\d+")
 
 
 def strip_digits(input_):
     """Strip numbers from a string"""
     return list(map(int, re_digits.findall(input_)))
+
 
 # Addition:
 
@@ -30,6 +32,7 @@ def addi(register, A, B, C):
     register[C] = register[A] + B
     return register
 
+
 # Multiplication:
 
 
@@ -43,6 +46,7 @@ def muli(register, A, B, C):
     """(multiply immediate) stores into register C the result of multiplying register A and value B."""
     register[C] = register[A] * B
     return register
+
 
 # Bitwise AND:
 
@@ -58,6 +62,7 @@ def bani(register, A, B, C):
     register[C] = register[A] & B
     return register
 
+
 # Bitwise OR:
 
 
@@ -72,6 +77,7 @@ def bori(register, A, B, C):
     register[C] = register[A] | B
     return register
 
+
 # Assignment:
 
 
@@ -85,6 +91,7 @@ def seti(register, A, B, C):
     """(set immediate) stores value A into register C. (Input B is ignored.)"""
     register[C] = A
     return register
+
 
 # Greater-than testing:
 
@@ -106,6 +113,7 @@ def gtrr(register, A, B, C):
     register[C] = int(register[A] > register[B])
     return register
 
+
 # Equality testing:
 
 
@@ -126,7 +134,27 @@ def eqrr(register, A, B, C):
     register[C] = int(register[A] == register[B])
     return register
 
-ALL_OPS = set((addr, addi, mulr, muli, banr, bani, borr, bori, setr, seti, gtir, gtri, gtrr, eqir, eqri, eqrr))
+
+ALL_OPS = set(
+    (
+        addr,
+        addi,
+        mulr,
+        muli,
+        banr,
+        bani,
+        borr,
+        bori,
+        setr,
+        seti,
+        gtir,
+        gtri,
+        gtrr,
+        eqir,
+        eqri,
+        eqrr,
+    )
+)
 
 assert len(ALL_OPS) == 16
 
@@ -138,9 +166,14 @@ def test_op(op, input_register, instruction, output_register):
 
 
 def possible_ops(input_register, instruction, output_register):
-    return {op for op in ALL_OPS if test_op(op, input_register, instruction, output_register)}
+    return {
+        op
+        for op in ALL_OPS
+        if test_op(op, input_register, instruction, output_register)
+    }
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
 
     with open("input.txt", "r") as fp:
         input_ = fp.read()
@@ -152,7 +185,9 @@ if __name__ == '__main__':
             before, instruction, after = bunch.splitlines()
         except ValueError:
             continue
-        samples.append((strip_digits(before), strip_digits(instruction), strip_digits(after)))
+        samples.append(
+            (strip_digits(before), strip_digits(instruction), strip_digits(after))
+        )
 
     # we know that the last bunch is the program
     program = list(map(strip_digits, bunch.splitlines()))

@@ -27,10 +27,11 @@ def parse(input_):
     target = list(map(int, (i for i in target.split()[-1].split(","))))
     return depth, target[::-1]
 
+
 test_input = """depth: 510
 target: 10,10"""
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     depth, target = parse(test_input)
 
     with open("input.txt", "r") as fp:
@@ -58,9 +59,9 @@ if __name__ == '__main__':
     # reddit answer
     from heapq import heappush, heappop
 
-    with open('input.txt', 'r') as f:
+    with open("input.txt", "r") as f:
         depth = int(next(f).split()[-1])
-        target = complex(*map(int, next(f).split()[-1].split(',')))
+        target = complex(*map(int, next(f).split()[-1].split(",")))
 
     ROCKY, WET, NARROW = 0, 1, 2
     NEITHER, TORCH, CLIMB = 0, 1, 2
@@ -68,19 +69,18 @@ if __name__ == '__main__':
     m_geo_index = dict()
 
     def viz(max):
-        m_viz_erosion = {ROCKY: '.', WET: '=', NARROW: '|'}
+        m_viz_erosion = {ROCKY: ".", WET: "=", NARROW: "|"}
 
         for y in range(int(max.imag) + 1):
             for x in range(int(max.real) + 1):
                 pos = x + 1j * y
                 if pos == 0:
-                    print('M', end='')
+                    print("M", end="")
                 elif pos == target:
-                    print('T', end='')
+                    print("T", end="")
                 else:
-                    print(m_viz_erosion[erosion(pos) % 3], end='')
+                    print(m_viz_erosion[erosion(pos) % 3], end="")
             print()
-
 
     def erosion(p):
         if p in m_erosion:
@@ -88,7 +88,6 @@ if __name__ == '__main__':
         ret = (geo_index(p) + depth) % 20183
         m_erosion[p] = ret
         return ret
-
 
     def geo_index(p):
         if p in m_geo_index:
@@ -111,11 +110,13 @@ if __name__ == '__main__':
     for y in range(int(target.imag) + 1):
         for x in range(int(target.real) + 1):
             risk += erosion(x + 1j * y) % 3
-    print('Part 1:', int(risk))
+    print("Part 1:", int(risk))
 
     # Part 2
     # Do a BFS search with a priority queue.
-    heap = [(0, 0, 0, TORCH)]  # (time, x, y, equipment), heap sorted by time, so time has to be first
+    heap = [
+        (0, 0, 0, TORCH)
+    ]  # (time, x, y, equipment), heap sorted by time, so time has to be first
     visited = {(0, TORCH): 0}  # (pos, equipment): time
 
     def visit_next(time, pos, eq, heap):
@@ -124,7 +125,9 @@ if __name__ == '__main__':
                 continue
             if erosion(newpos) % 3 == eq:  # can we go here with this equipment?
                 continue
-            if (newpos, eq) in visited and visited[(newpos, eq)] <= time:  # there is a faster way
+            if (newpos, eq) in visited and visited[
+                (newpos, eq)
+            ] <= time:  # there is a faster way
                 continue
             visited[(newpos, eq)] = time
             heappush(heap, (time, newpos.real, newpos.imag, eq))
@@ -147,4 +150,4 @@ if __name__ == '__main__':
         eq = 3 - eq - erosion(pos) % 3
         visit_next(time, pos, eq, heap)
 
-    print('Part 2:', time)
+    print("Part 2:", time)

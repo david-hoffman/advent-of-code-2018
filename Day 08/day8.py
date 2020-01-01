@@ -54,7 +54,7 @@ def build_graph(data):
         # after dealing with children if there are any, add the edge and read metadata
         if node:
             graph.add_edge(parent, node)
-        graph.nodes[node]['meta'] = tuple(data.popleft() for i in range(num_meta))
+        graph.nodes[node]["meta"] = tuple(data.popleft() for i in range(num_meta))
 
     build(node_num.i)
 
@@ -82,7 +82,8 @@ def get_value(graph):
     # calculate value from root.
     return value(0)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     # read real data from file
     with open("input.txt", "r") as fp:
         data = parse(fp.read())

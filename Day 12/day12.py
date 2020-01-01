@@ -86,7 +86,9 @@ def grow_plants(input_, generations):
 
     # we need to pad the init state by the number of generations + the length of rules on both sides!
     rule_size = rules.shape[-1]
-    all_states = np.zeros((generations, len(init_state) + 2 * (generations + rule_size)), dtype=bool)
+    all_states = np.zeros(
+        (generations, len(init_state) + 2 * (generations + rule_size)), dtype=bool
+    )
     idx = np.arange(all_states.shape[-1]) - (generations + rule_size)
     all_states[0, (-1 < idx) & (idx < len(init_state))] = init_state
 
@@ -102,7 +104,7 @@ def expand(current_state, idx, rule_size):
     plant_positions = np.argwhere(current_state)
     pad_left = rule_size - plant_positions.min()
     pad_right = plant_positions.max() - len(current_state) + rule_size
-    
+
     pad_left = max(pad_left, 0)
     pad_right = max(pad_right, 0)
 
@@ -140,12 +142,16 @@ def grow_plants2(input_, generations, generator=False):
         yield old_state, idx
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
 
     all_states, idx = grow_plants(test_input, 21)
 
-    truncated_states = (all_states[:, (idx > -4) & (idx < 36)].astype(int))
-    truncated_states = ("\n".join("".join(state) for state in truncated_states.astype(str)).replace("1", "#").replace("0", "."))
+    truncated_states = all_states[:, (idx > -4) & (idx < 36)].astype(int)
+    truncated_states = (
+        "\n".join("".join(state) for state in truncated_states.astype(str))
+        .replace("1", "#")
+        .replace("0", ".")
+    )
 
     assert truncated_states == test_result
     assert 325 == (idx[all_states[-1]].sum())

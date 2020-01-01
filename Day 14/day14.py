@@ -33,26 +33,27 @@ def run_simulation(n):
     for scores in simulator():
         if len(scores) > n + 10:
             break
-    return scores[n:n + 10]
+    return scores[n : n + 10]
 
 
 def run_simulation2(pattern):
     pattern = list(map(int, pattern))
     for i, scores in enumerate(simulator()):
-        test0 = scores[-len(pattern):]
-        test1 = scores[-len(pattern) - 1:-1]
+        test0 = scores[-len(pattern) :]
+        test1 = scores[-len(pattern) - 1 : -1]
         if test0 == pattern or test1 == pattern:
             break
 
     return len(scores) - len(pattern) - (test1 == pattern)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
 
     tests = (
         (9, "5158916779"),
         (5, "0124515891"),
         (18, "9251071085"),
-        (2018, "5941429882")
+        (2018, "5941429882"),
     )
     for input_, result in tests:
         ans = run_simulation(input_)
@@ -60,12 +61,7 @@ if __name__ == '__main__':
 
     print("Answer 1:", "".join(map(str, run_simulation(637061))))
 
-    tests2 = (
-        ("51589", 9),
-        ("01245", 5),
-        ("92510", 18),
-        ("59414", 2018)
-    )
+    tests2 = (("51589", 9), ("01245", 5), ("92510", 18), ("59414", 2018))
 
     for input_, result in tests2:
         ans = run_simulation2(input_)

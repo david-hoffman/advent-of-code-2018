@@ -17,16 +17,12 @@ from itertools import count
 translation_table = str.maketrans("#GE", "🧱👹🧝")
 
 # move in reading order
-directions = np.array((
-    (-1, 0),  # UP
-    (0, -1),  # LEFT
-    (0, 1),   # RIGHT
-    (1, 0),   # DOWN
-))
+directions = np.array(((-1, 0), (0, -1), (0, 1), (1, 0)))  # UP  # LEFT  # RIGHT  # DOWN
 
 
 class Unit(object):
     """A base class describing a unit"""
+
     char = "U"
     AP = 3
 
@@ -54,11 +50,13 @@ class Unit(object):
 
 class Elf(Unit):
     """Elf class"""
+
     char = "E"
 
 
 class Goblin(Unit):
     """Goblin class"""
+
     char = "G"
 
 
@@ -118,7 +116,17 @@ def format_map(units, char=True):
     output = place_units(units, char)
     output = ["".join(line) for line in output]
     for y, line in enumerate(output):
-        output[y] = line + "   " + ", ".join(["{}({})".format(unit.char, unit.HP) for unit in sorted(units) if unit.position[0] == y])
+        output[y] = (
+            line
+            + "   "
+            + ", ".join(
+                [
+                    "{}({})".format(unit.char, unit.HP)
+                    for unit in sorted(units)
+                    if unit.position[0] == y
+                ]
+            )
+        )
     return "\n".join(output)
 
 
@@ -163,14 +171,26 @@ def run_combat(units):
                 # assert test == best_paths
                 best_path = best_paths[0]
                 # move to new spot, make sure it's a neighbor
-                assert np.abs(np.subtract(unit.position, best_path[0])).sum() == 1, "{} ---> {}".format(unit.position, best_path[0])
+                assert (
+                    np.abs(np.subtract(unit.position, best_path[0])).sum() == 1
+                ), "{} ---> {}".format(unit.position, best_path[0])
                 unit.position = best_path[0]
-                
+
             # find targets
-            possible_targets = sorted([test_unit for test_unit in units if unit.is_neighbor(test_unit) and unit.char != test_unit.char and test_unit])
+            possible_targets = sorted(
+                [
+                    test_unit
+                    for test_unit in units
+                    if unit.is_neighbor(test_unit)
+                    and unit.char != test_unit.char
+                    and test_unit
+                ]
+            )
             if possible_targets:
                 # select target
-                target = sorted(possible_targets, key=lambda x: (x.HP, x.position[0], x.position[1]))[0]
+                target = sorted(
+                    possible_targets, key=lambda x: (x.HP, x.position[0], x.position[1])
+                )[0]
                 # attack
                 assert target
                 assert unit
@@ -191,10 +211,12 @@ def clean_test_input(test_input):
     num = len(test_input.split()[0])
     return "\n".join([i[:num] for i in test_input.strip().splitlines()])
 
+
 test_inputs = []
 test_results = []
 
-test_inputs.append("""
+test_inputs.append(
+    """
 #######   
 #.G...#   G(200)
 #...EG#   E(200), G(200)
@@ -202,11 +224,13 @@ test_inputs.append("""
 #..G#E#   G(200), E(200)
 #.....#   
 #######
-""")
+"""
+)
 
 test_results.append(27730)
 
-test_inputs.append("""
+test_inputs.append(
+    """
 #######       #######
 #G..#E#       #...#E#   E(200)
 #E#E.E#       #E#...#   E(197)
@@ -214,11 +238,13 @@ test_inputs.append("""
 #...#E#       #E..#E#   E(200), E(200)
 #...E.#       #.....#
 #######       #######
-""")
+"""
+)
 
 test_results.append(36334)
 
-test_inputs.append("""
+test_inputs.append(
+    """
 #######       #######   
 #E..EG#       #.E.E.#   E(164), E(197)
 #.#G.E#       #.#E..#   E(200)
@@ -226,11 +252,13 @@ test_inputs.append("""
 #G..#.#       #.E.#.#   E(200)
 #..E#.#       #...#.#   
 #######       #######   
-""")
+"""
+)
 
 test_results.append(39514)
 
-test_inputs.append("""
+test_inputs.append(
+    """
 #######       #######   
 #E.G#.#       #G.G#.#   G(200), G(98)
 #.#G..#       #.#G..#   G(200)
@@ -238,11 +266,13 @@ test_inputs.append("""
 #G..#.#       #...#G#   G(95)
 #...E.#       #...G.#   G(200)
 #######       #######   
-""")
+"""
+)
 
 test_results.append(27755)
 
-test_inputs.append("""
+test_inputs.append(
+    """
 #######       #######   
 #.E...#       #.....#   
 #.#..G#       #.#G..#   G(200)
@@ -250,11 +280,13 @@ test_inputs.append("""
 #E#G#G#       #.#.#.#   
 #...#G#       #G.G#G#   G(98), G(38), G(200)
 #######       #######   
-""")
+"""
+)
 
 test_results.append(28944)
 
-test_inputs.append("""
+test_inputs.append(
+    """
 #########       #########   
 #G......#       #.G.....#   G(137)
 #.E.#...#       #G.G#...#   G(200), G(200)
@@ -264,11 +296,12 @@ test_inputs.append("""
 #.G...G.#       #.......#   
 #.....G.#       #.......#   
 #########       #########  
-""")
+"""
+)
 
 test_results.append(18740)
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     for test_input, test_result in zip(test_inputs, test_results):
         input_ = clean_test_input(test_input)
 
@@ -277,7 +310,12 @@ if __name__ == '__main__':
         units, total_HP, rounds, maps = run_combat(units)
         result = total_HP * (rounds - 0)
         try:
-            assert result == test_result, "Result {} != {}, total HP {}, rounds {}\n".format(result, test_result, total_HP, rounds) + maps[-1] #+ "\n\n".join(["Round {}\n{}".format(i+1, map_) for i, map_ in enumerate(maps)])
+            assert result == test_result, (
+                "Result {} != {}, total HP {}, rounds {}\n".format(
+                    result, test_result, total_HP, rounds
+                )
+                + maps[-1]
+            )  # + "\n\n".join(["Round {}\n{}".format(i+1, map_) for i, map_ in enumerate(maps)])
         except AssertionError as e:
             print(e)
 

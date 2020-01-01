@@ -11,6 +11,7 @@ Copyright David Hoffman, 2018
 import numpy as np
 import tqdm
 import re
+
 re_digits = re.compile(r"-?\d+")
 
 
@@ -44,12 +45,8 @@ def find_best_points(p, r, num_steps=25, search_radius=1):
     naive maximization search algorithm assuming that the function is not too rough. Then we have three such
     points for each bot which we can easily find the maximum count and minimum distance.
     """
-    directions = np.array((
-        (1, 0, 0),
-        (0, 1, 0),
-        (0, 0, 1)
-    ))
-    
+    directions = np.array(((1, 0, 0), (0, 1, 0), (0, 0, 1)))
+
     for direction in directions:
         start = -r
         stop = r
@@ -57,7 +54,9 @@ def find_best_points(p, r, num_steps=25, search_radius=1):
         while True:
             step = max((stop - start) // num_steps, 1)
             test_points = np.arange(start, stop + step, step)
-            counts = np.array([inrange(p + direction * i, pos, radii) for i in test_points])
+            counts = np.array(
+                [inrange(p + direction * i, pos, radii) for i in test_points]
+            )
             idx_max = counts.argmax()
             # print(counts.shape, idx_max, test_points[idx_max], p + direction * test_points[idx_max], counts[idx_max], step)
             # plt.plot(test_points, counts)
@@ -68,6 +67,7 @@ def find_best_points(p, r, num_steps=25, search_radius=1):
         # plt.plot(test_points[idx_max], counts[idx_max], "ro")
         # plt.show()
         yield abs(p + direction * test_points[idx_max]).sum(), counts[idx_max]
+
 
 test_input0 = """pos=<0,0,0>, r=4
 pos=<1,0,0>, r=1
@@ -87,7 +87,7 @@ pos=<50,50,50>, r=200
 pos=<10,10,10>, r=5"""
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     pos, radii = parse(test_input1)
 
     with open("input.txt", "r") as fp:

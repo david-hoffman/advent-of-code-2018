@@ -58,7 +58,7 @@ def data():
         return fp.read().strip("\n")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     input_ = data()
     reacted = react_all(input_)
     print("Answer 1:", len(reacted))

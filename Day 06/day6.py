@@ -39,6 +39,6 @@ filt[edges] = False
 areas_filtered = areas[filt]
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     print("Answer 1:", areas_filtered.max())
     print("Answer 2:", (distances.sum(0) < 10000).sum())

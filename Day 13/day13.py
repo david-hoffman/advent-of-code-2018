@@ -14,12 +14,7 @@ from itertools import cycle
 
 # dictionary of headings, up and down are reversed
 # due to array ordering (indices increase going down a column)
-Heading = dict(
-    UP=(-1, 0),
-    DOWN=(1, 0),
-    LEFT=(0, -1),
-    RIGHT=(0, 1)
-)
+Heading = dict(UP=(-1, 0), DOWN=(1, 0), LEFT=(0, -1), RIGHT=(0, 1))
 
 # Reversed heading for testing purposes
 HeadingReversed = {v: k for k, v in Heading.items()}
@@ -29,11 +24,13 @@ InitCartPositions = {
     ">": ("RIGHT", "-"),
     "<": ("LEFT", "-"),
     "^": ("UP", "|"),
-    "v": ("DOWN", "|")
+    "v": ("DOWN", "|"),
 }
 
 # reverse mapping for making ASCII output
-InitCartPositionsReversed = {Heading[heading]: char for char, (heading, replacement) in InitCartPositions.items()}
+InitCartPositionsReversed = {
+    Heading[heading]: char for char, (heading, replacement) in InitCartPositions.items()
+}
 
 # Turn matrices, note that they're flipped too
 Turns = {
@@ -45,7 +42,7 @@ Turns = {
     "-": np.eye(2, dtype=int),
     "|": np.eye(2, dtype=int),
     "right": np.array([[0, 1], [-1, 0]]),
-    "left": np.array([[0, -1], [1, 0]])
+    "left": np.array([[0, -1], [1, 0]]),
 }
 
 
@@ -86,7 +83,9 @@ class Cart(object):
 
     def __str__(self):
         """Debug printout"""
-        return "Cart #{} @ {} heading {}".format(self.sortkey, self.position, HeadingReversed[tuple(self.heading)])
+        return "Cart #{} @ {} heading {}".format(
+            self.sortkey, self.position, HeadingReversed[tuple(self.heading)]
+        )
 
     @property
     def sortkey(self):
@@ -117,6 +116,7 @@ def format_map(carts, map_):
         new_map[y, x] = InitCartPositionsReversed[tuple(cart.heading)]
     return "\n".join(["".join(line) for line in new_map])
 
+
 test_input = r"""/->-\        
 |   |  /----\
 | /-+--+-\  |
@@ -124,12 +124,16 @@ test_input = r"""/->-\
 \-+-/  \-+--/
   \------/   """
 
-if __name__ == '__main__':
+if __name__ == "__main__":
 
     print("Testing turning matrices:")
     for turn, mat in Turns.items():
         for heading, arr in Heading.items():
-            print("{: >8s}: {: ^6s} --> {: ^6s}".format(turn, heading, HeadingReversed[tuple(mat @ arr)]))
+            print(
+                "{: >8s}: {: ^6s} --> {: ^6s}".format(
+                    turn, heading, HeadingReversed[tuple(mat @ arr)]
+                )
+            )
 
     # carts, map_ = parse(test_input)
 

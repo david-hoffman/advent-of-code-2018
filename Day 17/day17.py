@@ -76,7 +76,7 @@ def new_vertex(old_vertex, direction):
     return tuple(i + di for i, di in zip(old_vertex, direction))
 
 
-def fill_water(start, map_,):
+def fill_water(start, map_):
     """this is essentially a depth first search"""
     visited = set()
     standing = set()
@@ -115,9 +115,14 @@ def fill_water(start, map_,):
 
     def flowable(vertex):
         """Check lower right and lower left for clay"""
-        clay_test = any(clay(new_vertex(vertex, direction)) for direction in (LEFT, RIGHT))
+        clay_test = any(
+            clay(new_vertex(vertex, direction)) for direction in (LEFT, RIGHT)
+        )
         # all three tiles below should not have been visited
-        visited_test = all(new_vertex(vertex, direction) not in visited for direction in ((0, 0), LEFT, RIGHT))
+        visited_test = all(
+            new_vertex(vertex, direction) not in visited
+            for direction in ((0, 0), LEFT, RIGHT)
+        )
         return clay_test and visited_test
 
     while stack:
@@ -154,7 +159,7 @@ x=498, y=10..13
 x=504, y=10..13
 y=13, x=498..504"""
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     map_, maxes, mins = parse(test_input.splitlines())
     print("\n".join("".join(line) for line in map_[:, 494:]))
     for i, (water, standing, current) in enumerate(fill_water((0, 500), map_)):

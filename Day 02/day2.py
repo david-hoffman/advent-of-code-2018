@@ -21,7 +21,7 @@ strings = pd.read_csv("input.txt", header=None)[0].values
 chars = np.array([np.array(s, "c").view("uint8") for s in strings])
 
 # calculate counts of chars
-counts = ([np.bincount(char) for char in chars])
+counts = [np.bincount(char) for char in chars]
 
 # calculate counts of counts
 counts_of_counts = [np.bincount(count, minlength=10) for count in counts]

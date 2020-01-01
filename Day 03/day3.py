@@ -22,6 +22,7 @@ def data():
             left, top, width, height = [int(num) for num in numbers[1:]]
             yield (slice(top, top + height), slice(left, left + width))
 
+
 if __name__ == "__main__":
     # Part 1
     # Make empty fabric
@@ -38,7 +39,7 @@ if __name__ == "__main__":
     # label claims
     lbl, nlbl = ndi.label(fabric)
     lbls = np.arange(1, nlbl + 1)
- 
+
     # figure out which square inch has more than one claim
     max_values = ndi.labeled_comprehension(fabric, lbl, lbls, np.max, int, 0)
 

@@ -12,12 +12,7 @@ from collections import deque
 import networkx as nx
 import matplotlib.pyplot as plt
 
-DIRECTIONS = dict(
-    E=(0, 1),
-    W=(0, -1),
-    N=(-1, 0),
-    S=(1, 0),
-)
+DIRECTIONS = dict(E=(0, 1), W=(0, -1), N=(-1, 0), S=(1, 0))
 
 
 def sum_tuple(t0, t1):
@@ -43,7 +38,9 @@ def build_graph(input_):
             # branch
             growing_ends = branch_stack[-1]
         else:
-            new_edges = [(end, sum_tuple(end, DIRECTIONS[char])) for end in growing_ends]
+            new_edges = [
+                (end, sum_tuple(end, DIRECTIONS[char])) for end in growing_ends
+            ]
             graph.add_edges_from(new_edges)
             # update growing ends
             growing_ends = {new for old, new in new_edges}
@@ -55,15 +52,16 @@ def long_short_path(graph):
     path_lengths = nx.shortest_path_length(graph, (0, 0))
     return max(path_lengths.values())
 
+
 tests = (
     ("^WNE$", 3),
     ("^ENWWW(NEEE|SSE(EE|N))$", 10),
     ("^ENNWSWW(NEWS|)SSSEEN(WNSE|)EE(SWEN|)NNN$", 18),
     ("^ESSWWN(E|NNENN(EESS(WNSE|)SSS|WWWSSSSE(SW|NNNE)))$", 23),
-    ("^WSSEESWWWNW(S|NENNEEEENN(ESSSSW(NWSW|SSEN)|WSWWN(E|WWS(E|SS))))$", 31)
+    ("^WSSEESWWWNW(S|NENNEEEENN(ESSSSW(NWSW|SSEN)|WSWWN(E|WWS(E|SS))))$", 31),
 )
 
-if __name__ == '__main__':
+if __name__ == "__main__":
 
     for test, result in tests:
         graph = build_graph(test)

@@ -27,7 +27,7 @@ class circle(object):
         self.current_idx = 0
 
     def add_marble(self, marble_num):
-        
+
         if marble_num % 23:
             if len(self.list) < 2:
                 index_to_place = len(self.list)
@@ -79,7 +79,7 @@ def parse(input_):
         return num_players, num_marbles
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     for input_ in test_input.strip("\n").split("\n"):
         num_players, num_marbles, result = parse(input_)
         print(input_)

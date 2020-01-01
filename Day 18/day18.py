@@ -78,9 +78,10 @@ def detect_pattern(series):
     """There has to be a pattern, right???"""
     for i in range(1, len(series) // 2 + 1):
         one = series[-i:]
-        two = series[-2 * i:-i]
+        two = series[-2 * i : -i]
         if one == two:
-            return series[:-2 * i], one, two
+            return series[: -2 * i], one, two
+
 
 test_input = """.#.#...|#.
 .....#|##|
@@ -104,7 +105,7 @@ test_result = """.||##.....
 ||||#|||||
 ||||||||||"""
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     map_ = parse(test_input.splitlines())
     # print(map_to_str(map_))
     for i in range(10):

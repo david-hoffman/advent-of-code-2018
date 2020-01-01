@@ -36,11 +36,15 @@ def best_loc(serial_num, power=None, size=3):
     # we use a uniform filter here (mean filter) instead of generic_filter and np.sum
     # because the C implementation of uniform filter is lightning fast
     # convert input to float first
-    max_power = ndi.uniform_filter(power * 1.0, size=size, output=None, mode='constant', cval=0, origin=0)
+    max_power = ndi.uniform_filter(
+        power * 1.0, size=size, output=None, mode="constant", cval=0, origin=0
+    )
     # convert mean to sum
-    max_power = (max_power * size**2).round().astype(int)
+    max_power = (max_power * size ** 2).round().astype(int)
     # find central pixel and convert to upper left
-    Y_max, X_max = np.array(np.unravel_index(max_power.argmax(), max_power.shape)) + 1 - size // 2
+    Y_max, X_max = (
+        np.array(np.unravel_index(max_power.argmax(), max_power.shape)) + 1 - size // 2
+    )
     return X_max, Y_max, max_power.max(), (max_power == max_power.max()).sum()
 
 
@@ -62,7 +66,7 @@ Fuel cell at 217,196, grid serial number 39: power level  0.
 Fuel cell at 101,153, grid serial number 71: power level  4."""
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # tests
     # for X, Y, serial_num, result in np.array(list(map(int, re.findall(r"-?\d+", tests)))).reshape(-1, 4):
     #     assert power_levels(serial_num)[Y - 1, X - 1] == result, "Fuel cell at {},{}, grid serial number {}: power level {}.".format(X, Y, result, serial_num)
@@ -72,7 +76,9 @@ if __name__ == '__main__':
     print("Answer 1:", end=" ")
     for serial_num in (18, 42, 3628)[-1:]:
         X_max, Y_max, max_power, num_max = best_loc(serial_num)
-        print("num max {}, max {}, <X,y> = {},{}".format(num_max, max_power, X_max, Y_max))
+        print(
+            "num max {}, max {}, <X,y> = {},{}".format(num_max, max_power, X_max, Y_max)
+        )
 
     print("Answer 2:", end=" ")
     for serial_num in (18, 42, 3628)[-1:]:

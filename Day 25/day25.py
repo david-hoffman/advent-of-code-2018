@@ -19,7 +19,9 @@ def manhattan(pos0, pos1):
 
 
 def parse(input_):
-    return [tuple(map(int, line.split()[-1].split(","))) for line in input_.splitlines()]
+    return [
+        tuple(map(int, line.split()[-1].split(","))) for line in input_.splitlines()
+    ]
 
 
 def find_constellations(points, diagnostics=False, distance=3):
@@ -36,22 +38,26 @@ def find_constellations(points, diagnostics=False, distance=3):
 
     return len(list(nx.connected_components(graph)))
 
+
 test_inputs = []
 test_results = []
 
-test_inputs.append("""0,0,0,0
+test_inputs.append(
+    """0,0,0,0
  3,0,0,0
  0,3,0,0
  0,0,3,0
  0,0,0,3
  0,0,0,6
  9,0,0,0
-12,0,0,0""")
+12,0,0,0"""
+)
 
 test_results.append(2)
 
 
-test_inputs.append("""-1,2,2,0
+test_inputs.append(
+    """-1,2,2,0
 0,0,2,-2
 0,0,0,-2
 -1,2,0,0
@@ -60,12 +66,14 @@ test_inputs.append("""-1,2,2,0
 -1,3,2,2
 -1,0,-1,0
 0,2,1,-2
-3,0,0,0""")
+3,0,0,0"""
+)
 
 test_results.append(4)
 
 
-test_inputs.append("""1,-1,0,1
+test_inputs.append(
+    """1,-1,0,1
 2,0,-1,0
 3,2,-1,0
 0,0,3,1
@@ -74,12 +82,14 @@ test_inputs.append("""1,-1,0,1
 -2,2,0,0
 2,-2,0,-1
 1,-1,0,-1
-3,2,0,2""")
+3,2,0,2"""
+)
 
 test_results.append(3)
 
 
-test_inputs.append("""1,-1,-1,-2
+test_inputs.append(
+    """1,-1,-1,-2
 -2,-2,0,1
 0,2,1,3
 -2,3,-2,1
@@ -88,11 +98,12 @@ test_inputs.append("""1,-1,-1,-2
 0,-2,-1,0
 -2,2,3,-1
 1,2,2,0
--1,-2,0,-2""")
+-1,-2,0,-2"""
+)
 
 test_results.append(8)
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     for test_result, test_input in zip(test_results, test_inputs):
         assert find_constellations(parse(test_input)) == test_result
 
